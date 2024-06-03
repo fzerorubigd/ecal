@@ -14,7 +14,7 @@ def main():
     parser = argparse.ArgumentParser(description='Render images on the screen')
     parser.add_argument('black', type=pathlib.Path,help='black mask')
     parser.add_argument('red', type=pathlib.Path, help='red mask')
-    parser.add_argument('--clear', action='clear', help='clear the screen')
+    parser.add_argument('--clear', action='store_true', help='clear the screen')
     args = parser.parse_args()
     
     try:
