@@ -26,7 +26,7 @@ def main():
         bImg = Image.open(os.path.abspath(args.black))
         rImg = Image.open(os.path.abspath(args.red))
 
-        epd.display(epd.getbuffer(Himage),epd.getbuffer(Himage_Other))
+        epd.display(epd.getbuffer(bImg),epd.getbuffer(rImg))
         time.sleep(2)
         logging.info("done")
     except IOError as e:
