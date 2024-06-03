@@ -14,6 +14,7 @@ def main():
     parser = argparse.ArgumentParser(description='Render images on the screen')
     parser.add_argument('black', type=pathlib.Path,help='black mask')
     parser.add_argument('red', type=pathlib.Path, help='red mask')
+    parser.add_argument('--clear', action='clear' help='clear the screen')
     args = parser.parse_args()
     
     try:
@@ -22,6 +23,9 @@ def main():
         logging.info("init and Clear")
         epd.init()
         epd.Clear()
+
+        if args.clear:
+            quit()
 
         bImg = Image.open(os.path.abspath(args.black))
         rImg = Image.open(os.path.abspath(args.red))
