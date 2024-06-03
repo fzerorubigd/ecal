@@ -1,0 +1,5 @@
+colorzero==2.0
+gpiozero==2.0.1
+pillow==10.3.0
+setuptools==70.0.0
+spidev==3.6
