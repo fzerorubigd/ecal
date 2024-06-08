@@ -7,6 +7,7 @@ PIHOST:=$(PIUSER)@$(PIIP)
 PICMD:=ssh $(PIHOST) -o LogLevel=QUIET -t
 PIROOT:="/home/$(PIUSER)/ecal"
 PISYNC:=rsync -avz --update -e ssh
+GPG:=gpg --no-default-keyring --keyring $(ROOT)/keyring/trust.db --pinentry-mode=loopback 
 
 setup-root:
 	@$(PICMD) mkdir -p $(PIROOT)
@@ -39,6 +40,14 @@ export KEYCOMMAND
 $(ROOT)/keyring/keycommands:
 	echo "$$KEYCOMMAND" > $@
 
+$(ROOT)/keyring/$(PIHOST).public.key:
+	@$(GPG) --export --armor $(PIHOST) > $@
 
-setup-key: $(ROOT)/keyring/.pass $(ROOT)/keyring/keycommands
-	gpg --no-default-keyring --keyring ./keyring/trust.db --pinentry-mode=loopback --passphrase-file $(ROOT)/keyring/.pass --batch --generate-key $(ROOT)/keyring/keycommands
+$(ROOT)/keyring/$(PIHOST).private.key:
+	@$(GPG) --passphrase-file $(ROOT)/keyring/.pass --export-secret-keys --armor $(PIHOST) > $@
+
+keys: $(ROOT)/keyring/$(PIHOST).public.key $(ROOT)/keyring/$(PIHOST).private.key
+	@cat $(ROOT)/keyring/$(PIHOST).public.key 
+
+setup-keys: $(ROOT)/keyring/.pass $(ROOT)/keyring/keycommands
+	@$(GPG) --passphrase-file $(ROOT)/keyring/.pass --batch --generate-key $(ROOT)/keyring/keycommands
