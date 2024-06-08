@@ -18,3 +18,27 @@ setup: setup-root setup-render
 	
 clean-screen: setup
 	@$(PICMD) python $(PIROOT)/render/ecal.py --clear x x 
+
+$(ROOT)/keyring/.pass:
+	openssl rand -out $@ -base64 100
+
+define KEYCOMMAND
+%echo "Generating ECC keys (sign & encr) with no-expiry"
+  Key-Type: EDDSA
+    Key-Curve: ed25519
+  Subkey-Type: ECDH
+    Subkey-Curve: cv25519
+  Name-Email: $(PIHOST)
+  Expire-Date: 0
+  # Now, let's do a commit here, so that we can later print "done" :-)
+  %commit
+%echo Done
+endef
+export KEYCOMMAND
+
+$(ROOT)/keyring/keycommands:
+	echo "$$KEYCOMMAND" > $@
+
+
+setup-key: $(ROOT)/keyring/.pass $(ROOT)/keyring/keycommands
+	gpg --no-default-keyring --keyring ./keyring/trust.db --pinentry-mode=loopback --passphrase-file $(ROOT)/keyring/.pass --batch --generate-key $(ROOT)/keyring/keycommands
